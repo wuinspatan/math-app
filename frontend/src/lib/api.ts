@@ -4,7 +4,8 @@
  * The base URL is read from the environment variable set in .env.local
  */
 
-const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const envBase = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const BASE = envBase.endsWith("/") ? envBase.slice(0, -1) : envBase;
 
 // ─── Generic helper ────────────────────────────────────────────────────────────
 async function post<T>(path: string, body: unknown): Promise<T> {
