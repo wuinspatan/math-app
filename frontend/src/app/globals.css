@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base resets ────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: #0a0a0f;
+  color: #e2e8f0;
+  font-family: 'IBM Plex Sans', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #12121a; }
+::-webkit-scrollbar-thumb { background: #3a3a5c; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #7c6af7; }
+
+/* ── Selection ──────────────────────────────────────────────────────────────── */
+::selection { background: rgba(124,106,247,0.35); color: #fff; }
+
+/* ── Utility layers ─────────────────────────────────────────────────────────── */
+@layer utilities {
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(124,106,247,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,247,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(124,106,247,0.3);
+  }
+
+  .font-display { font-family: 'DM Mono', monospace; }
+}
+
+/* ── Matrix cell ────────────────────────────────────────────────────────────── */
+.matrix-cell {
+  @apply w-full h-full text-center bg-surface border border-border
+         text-text font-mono text-sm outline-none
+         focus:border-accent focus:ring-1 focus:ring-accent/40
+         transition-colors duration-150 rounded-sm;
+  padding: 6px 4px;
+}
+
+.matrix-cell::-webkit-inner-spin-button,
+.matrix-cell::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+/* ── Tab indicator animation ─────────────────────────────────────────────────── */
+.tab-indicator {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
