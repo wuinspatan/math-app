@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-from routers import converters, matrix, laplace
+from routers import converters, matrix, laplace, calculus
 
 load_dotenv()
 
@@ -41,6 +41,7 @@ app.add_middleware(
 app.include_router(converters.router, prefix="/convert", tags=["Converter"])
 app.include_router(matrix.router, prefix="/matrix", tags=["Matrix"])
 app.include_router(laplace.router, prefix="/laplace", tags=["Laplace"])
+app.include_router(calculus.router, prefix="/calculus", tags=["Calculus"])
 
 
 # ── Health check ───────────────────────────────────────────────────────────────

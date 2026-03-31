@@ -1,7 +1,7 @@
 """
 core/laplace.py
 Compute Laplace transforms symbolically using SymPy.
-Returns both the result and a step-by-step explanation list.
+Returns both the result and a step-by-step LaTeX explanation list.
 """
 
 import sympy as sp
@@ -15,64 +15,55 @@ s = sp.Symbol("s")
 KNOWN_FORMS: list[tuple[str, str, str]] = [
     # (pattern name, mathexpr, transform)
     ("constant",    "c",         "c/s"),
-    ("power",       "t^n",       "n!/s^(n+1)"),
-    ("exponential", "e^(at)",    "1/(s-a)"),
-    ("sine",        "sin(at)",   "a/(s²+a²)"),
-    ("cosine",      "cos(at)",   "s/(s²+a²)"),
+    ("power",       "t^n",       "n!/s^{n+1}"),
+    ("exponential", "e^{at}",    "1/(s-a)"),
+    ("sine",        "sin(at)",   "a/(s^2+a^2)"),
+    ("cosine",      "cos(at)",   "s/(s^2+a^2)"),
     ("step",        "u(t)",      "1/s"),
     ("delta",       "δ(t)",      "1"),
 ]
 
 
 def _build_steps(expr_str: str, expr: sp.Expr, result: sp.Expr) -> list[str]:
-    """Produce a beginner-friendly explanation list."""
+    """Produce a formal mathematical explanation list using LaTeX."""
     steps: list[str] = []
 
     steps.append(
-        f"Step 1: We want to find the Laplace transform of f(t) = {expr_str}"
+        rf"\text{{Goal: Find the Laplace transform of }} f(t) = {sp.latex(expr)}"
     )
     steps.append(
-        "Step 2: The Laplace transform is defined as: L{f(t)} = ∫₀^∞ f(t)·e^(−st) dt"
+        r"\text{The Laplace transform is defined as: } \mathcal{L}\{f(t)\} = \int_0^\infty f(t) \cdot e^{-st} dt"
     )
 
     # Detect common patterns and give contextual hints
     if expr.is_number:
         steps.append(
-            f"Step 3: f(t) = {expr_str} is a constant. "
-            "Using the rule L{c} = c/s"
+            rf"\text{{f(t) = {sp.latex(expr)} is a constant.}} \text{{ Using the rule }} \mathcal{{L}}\{{c\}} = \frac{{c}}{{s}}"
         )
     elif expr.is_Pow and expr.args[0] == t:
         n = expr.args[1]
         steps.append(
-            f"Step 3: f(t) = t^{n} is a power of t. "
-            f"Using the rule L{{t^n}} = n!/s^(n+1) -> L{{t^{n}}} = {n}!/s^({n}+1)"
+            rf"\text{{f(t) = t^{{{sp.latex(n)}}} is a power of t.}} \text{{ Using the rule }} \mathcal{{L}}\{{t^n\}} = \frac{{n!}}{{s^{{n+1}}}}"
         )
     elif expr.has(sp.exp):
         steps.append(
-            "Step 3: The function contains an exponential e^(at). "
-            "Using the first shifting theorem: L{e^(at)·f(t)} = F(s-a)"
+            r"\text{The function contains an exponential } e^{at}. \text{ Using the first shifting theorem: } \mathcal{L}\{e^{at}f(t)\} = F(s-a)"
         )
     elif expr.has(sp.sin):
         steps.append(
-            "Step 3: The function contains sin(at). "
-            "Using the rule: L{sin(at)} = a/(s²+a²)"
+            r"\text{The function contains sin(at).} \text{ Using the rule: } \mathcal{L}\{\sin(at)\} = \frac{a}{s^2+a^2}"
         )
     elif expr.has(sp.cos):
         steps.append(
-            "Step 3: The function contains cos(at). "
-            "Using the rule: L{cos(at)} = s/(s²+a²)"
+            r"\text{The function contains cos(at).} \text{ Using the rule: } \mathcal{L}\{\cos(at)\} = \frac{s}{s^2+a^2}"
         )
     else:
         steps.append(
-            "Step 3: Applying the integral definition and standard transform table..."
+            r"\text{Applying the integral definition and standard transform table...}"
         )
 
-    steps.append("Step 4: SymPy computes the integral symbolically...")
     steps.append(
-        f"Step 5: Result: L{{f(t)}} = {sp.latex(result)}"
-    )
-    steps.append(
-        "Step 6: Tip: The variable 's' in the result is the complex frequency domain variable."
+        rf"\therefore \mathcal{{L}}\{{f(t)\}} = {sp.latex(result)}"
     )
 
     return steps
@@ -103,9 +94,10 @@ def compute(expr_str: str) -> dict:
         raise ValueError(f"SymPy could not compute the transform: {exc}")
 
     return {
-        "input":      expr_str,
-        "result":     str(result),
+        "input":       expr_str,
+        "input_latex": sp.latex(expr),
+        "result":      str(result),
         "result_latex": sp.latex(result),
-        "steps":      _build_steps(expr_str, expr, result),
+        "steps":       _build_steps(expr_str, expr, result),
         "transform_table": KNOWN_FORMS,
     }

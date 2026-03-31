@@ -35,11 +35,20 @@ export type ConvertResult = {
 export type MatrixResult = { result: number[][] };
 
 export type LaplaceResult = {
-  input:          string;
-  result:         string;
-  result_latex:   string;
-  steps:          string[];
-  transform_table: [string, string, string][];
+  input:           string;
+  input_latex:     string;
+  result:          string;
+  result_latex:    string;
+  steps:           string[];
+  transform_table:  [string, string, string][];
+};
+
+export type CalculusResult = {
+  input:        string;
+  input_latex:  string;
+  result:       string;
+  result_latex: string;
+  steps:        string[];
 };
 
 // ─── Converter ─────────────────────────────────────────────────────────────────
@@ -57,4 +66,9 @@ export function matrixOp(op: MatrixOp, a: number[][], b: number[][]) {
 // ─── Laplace ───────────────────────────────────────────────────────────────────
 export function laplaceTransform(expression: string) {
   return post<LaplaceResult>("/laplace", { expression });
+}
+
+// ─── Calculus ──────────────────────────────────────────────────────────────────
+export function differentiate(expression: string) {
+  return post<CalculusResult>("/calculus/diff", { expression });
 }

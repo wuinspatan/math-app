@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import { Hash, Grid3x3, Zap, Github } from "lucide-react";
+import { Hash, Grid3x3, Zap, Github, Activity } from "lucide-react";
 import Converter from "@/components/features/Converter";
 import MatrixCalculator from "@/components/features/Matrix";
+import Calculus from "@/components/features/Calculus";
 import Laplace from "@/components/features/Laplace";
 
-type Tab = "converter" | "matrix" | "laplace";
+type Tab = "converter" | "matrix" | "calculus" | "laplace";
 
 const TABS: { key: Tab; label: string; icon: React.ReactNode; desc: string }[] = [
   { key: "converter", label: "Converter", icon: <Hash size={16} />, desc: "Base conversion" },
   { key: "matrix", label: "Matrix", icon: <Grid3x3 size={16} />, desc: "Add · Sub · Mul" },
+  { key: "calculus", label: "Calculus 1", icon: <Activity size={16} />, desc: "Find dy/dx" },
   { key: "laplace", label: "Laplace", icon: <Zap size={16} />, desc: "Laplace + steps" },
 ];
 
@@ -91,6 +93,7 @@ export default function Home() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {tab === "converter" && <Converter />}
         {tab === "matrix" && <MatrixCalculator />}
+        {tab === "calculus" && <Calculus />}
         {tab === "laplace" && <Laplace />}
       </main>
 
