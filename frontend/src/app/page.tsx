@@ -50,11 +50,11 @@ export default function Home() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-6">
         <div className="mb-2">
           <span className="text-xs font-display uppercase tracking-widest text-accent">
-            Production-ready
+            Let's get start!
           </span>
         </div>
         <h1 className="text-4xl sm:text-5xl font-display font-medium text-text leading-tight mb-3">
-          Math<span className="text-accent">App</span>
+          Math<span className="text-accent">Wolfram</span>
         </h1>
         <p className="text-dim max-w-lg">
           Number base converter · Matrix calculator · Laplace transforms with step-by-step learning.
