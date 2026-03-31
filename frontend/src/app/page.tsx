@@ -9,9 +9,9 @@ import Laplace from "@/components/features/Laplace";
 type Tab = "converter" | "matrix" | "laplace";
 
 const TABS: { key: Tab; label: string; icon: React.ReactNode; desc: string }[] = [
-  { key: "converter", label: "Converter",    icon: <Hash size={16} />,    desc: "Base conversion" },
-  { key: "matrix",    label: "Matrix",       icon: <Grid3x3 size={16} />, desc: "Add · Sub · Mul" },
-  { key: "laplace",   label: "Laplace",icon: <Zap size={16} />,     desc: "Laplace + steps" },
+  { key: "converter", label: "Converter", icon: <Hash size={16} />, desc: "Base conversion" },
+  { key: "matrix", label: "Matrix", icon: <Grid3x3 size={16} />, desc: "Add · Sub · Mul" },
+  { key: "laplace", label: "Laplace", icon: <Zap size={16} />, desc: "Laplace + steps" },
 ];
 
 export default function Home() {
@@ -28,7 +28,7 @@ export default function Home() {
                             justify-center text-accent font-display font-medium text-sm">
               M
             </div>
-            <span className="font-display text-text font-medium tracking-tight">MathApp</span>
+            <span className="font-display text-text font-medium tracking-tight">Math Wolfram</span>
             <span className="hidden sm:inline text-muted text-xs font-mono border border-border
                              rounded px-1.5 py-0.5">
               v1.0
@@ -90,8 +90,8 @@ export default function Home() {
       {/* ── Content ─────────────────────────────────────────────────────────── */}
       <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {tab === "converter" && <Converter />}
-        {tab === "matrix"    && <MatrixCalculator />}
-        {tab === "laplace"   && <Laplace />}
+        {tab === "matrix" && <MatrixCalculator />}
+        {tab === "laplace" && <Laplace />}
       </main>
 
       {/* ── Footer ──────────────────────────────────────────────────────────── */}
