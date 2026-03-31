@@ -11,7 +11,7 @@ type Tab = "converter" | "matrix" | "laplace";
 const TABS: { key: Tab; label: string; icon: React.ReactNode; desc: string }[] = [
   { key: "converter", label: "Converter",    icon: <Hash size={16} />,    desc: "Base conversion" },
   { key: "matrix",    label: "Matrix",       icon: <Grid3x3 size={16} />, desc: "Add · Sub · Mul" },
-  { key: "laplace",   label: "Advanced Math",icon: <Zap size={16} />,     desc: "Laplace + steps" },
+  { key: "laplace",   label: "Laplace",icon: <Zap size={16} />,     desc: "Laplace + steps" },
 ];
 
 export default function Home() {
