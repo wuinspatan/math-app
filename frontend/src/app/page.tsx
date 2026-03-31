@@ -99,9 +99,10 @@ export default function Home() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row
                         items-center justify-between gap-2 text-xs text-muted font-mono">
           <span>MathApp · Next.js + FastAPI</span>
+          <span>Develop by wuinspatan</span>
           <span>
-            Frontend: <span className="text-dim">Vercel</span> ·
-            Backend: <span className="text-dim">Railway</span>
+            Live Frontend: <span className="text-dim">Vercel</span> ·
+            Live Backend: <span className="text-dim">Railway</span>
           </span>
         </div>
       </footer>

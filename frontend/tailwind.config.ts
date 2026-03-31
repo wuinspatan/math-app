@@ -10,10 +10,10 @@ const config: Config = {
     extend: {
       fontFamily: {
         // Display: sharp geometric – used for headings
-        display: ["'DM Mono'", "monospace"],
-        // Body: clean sans
-        body: ["'IBM Plex Sans'", "sans-serif"],
-        mono: ["'DM Mono'", "monospace"],
+        display: ["'Oswald'", "sans-serif"],
+        // Body: sophisticated serif
+        body: ["'Playfair Display'", "serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "'Liberation Mono'", "'Courier New'", "monospace"],
       },
       colors: {
         // Design system palette
