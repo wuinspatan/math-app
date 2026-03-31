@@ -44,11 +44,12 @@ export type LaplaceResult = {
 };
 
 export type CalculusResult = {
-  input:        string;
-  input_latex:  string;
-  result:       string;
-  result_latex: string;
-  steps:        string[];
+  input:         string;
+  input_latex:   string;
+  target_value?: string; // only for limits
+  result:        string;
+  result_latex:  string;
+  steps:         string[];
 };
 
 // ─── Converter ─────────────────────────────────────────────────────────────────
@@ -71,4 +72,8 @@ export function laplaceTransform(expression: string) {
 // ─── Calculus ──────────────────────────────────────────────────────────────────
 export function differentiate(expression: string) {
   return post<CalculusResult>("/calculus/diff", { expression });
+}
+
+export function calculateLimit(expression: string, value: string) {
+  return post<CalculusResult>("/calculus/limit", { expression, value });
 }

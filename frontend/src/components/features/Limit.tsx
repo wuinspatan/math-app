@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Activity } from "lucide-react";
-import { differentiate, type CalculusResult } from "@/lib/api";
+import { Activity, ArrowRight } from "lucide-react";
+import { calculateLimit, type CalculusResult } from "@/lib/api";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import ErrorMessage from "@/components/ui/ErrorMessage";
@@ -11,13 +11,10 @@ import { InlineMath, BlockMath } from "react-katex";
 
 // ── Preset examples ───────────────────────────────────────────────────────────
 const EXAMPLES = [
-  { label: "aˣ",         expr: "a**x",         hint: "Exponential (base a)" },
-  { label: "x² + 5x",    expr: "x**2 + 5*x",   hint: "Polynomial" },
-  { label: "sin(x)",     expr: "sin(x)",       hint: "Trigonometric" },
-  { label: "cos(x²)",    expr: "cos(x**2)",    hint: "Chain rule" },
-  { label: "e^(2x)",     expr: "exp(2*x)",     hint: "Exponential" },
-  { label: "ln(x)",      expr: "log(x)",       hint: "Natural log" },
-  { label: "x·sin(x)",   expr: "x*sin(x)",     hint: "Product rule" },
+  { label: "\\lim_{x \\to 0} \\frac{\\sin(x)}{x}", expr: "sin(x)/x", value: "0", hint: "Fundamental limit" },
+  { label: "\\lim_{x \\to \\infty} \\frac{1}{x}",  expr: "1/x",      value: "oo", hint: "Infinite limit" },
+  { label: "\\lim_{x \\to 2} x^2+3",               expr: "x**2+3",   value: "2",  hint: "Direct substitution" },
+  { label: "\\lim_{x \\to 0} e^x",                  expr: "exp(x)",   value: "0",  hint: "Exponential limit" },
 ];
 
 // ── Step display (LaTeX) ───────────────────────────────────────────────────────
@@ -44,17 +41,18 @@ function Steps({ steps }: { steps: string[] }) {
 }
 
 // ── Main Component ─────────────────────────────────────────────────────────────
-export default function Calculus() {
-  const [expr,    setExpr]    = useState("");
-  const [result,  setResult]  = useState<CalculusResult | null>(null);
-  const [error,   setError]   = useState("");
-  const [loading, setLoading] = useState(false);
+export default function Limit() {
+  const [expr,       setExpr]       = useState("");
+  const [limitVal,   setLimitVal]   = useState("0");
+  const [result,     setResult]     = useState<CalculusResult | null>(null);
+  const [error,      setError]      = useState("");
+  const [loading,    setLoading]    = useState(false);
 
-  async function compute(expression: string) {
+  async function compute(expression: string, val?: string) {
     if (!expression.trim()) { setError("Please enter an expression."); return; }
     setError(""); setLoading(true);
     try {
-      const data = await differentiate(expression.trim());
+      const data = await calculateLimit(expression.trim(), (val ?? limitVal).trim());
       setResult(data);
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : "Computation failed");
@@ -66,9 +64,10 @@ export default function Calculus() {
 
   function pickExample(ex: typeof EXAMPLES[0]) {
     setExpr(ex.expr);
+    setLimitVal(ex.value);
     setResult(null);
     setError("");
-    compute(ex.expr);
+    compute(ex.expr, ex.value);
   }
 
   return (
@@ -76,53 +75,81 @@ export default function Calculus() {
       <div>
         <h2 className="text-3xl font-display font-medium text-text mb-2 flex items-center gap-3">
           <Activity size={24} className="text-accent" />
-          Calculus 1 – Differentiation
+          Limits
         </h2>
         <p className="text-dim text-sm max-w-2xl leading-relaxed">
-          Find the derivative <InlineMath math="\frac{dy}{dx}" /> of any function. 
+          Evaluate the limit of $f(x)$ as $x$ approaches a value.
           See the full derivation steps with formal mathematical notation.
         </p>
       </div>
 
       {/* Input Section */}
       <Card className="p-6">
-        <label className="text-xs font-display text-dim uppercase tracking-widest mb-3 block">
-          Function to differentiate f(x):
-        </label>
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent font-serif italic text-lg opacity-60">
-              f(x) =
-            </span>
-            <input
-              type="text"
-              value={expr}
-              onChange={e => { setExpr(e.target.value); setError(""); }}
-              onKeyDown={e => e.key === "Enter" && compute(expr)}
-              placeholder="e.g.  a**x,  x**2 + sin(x)"
-              className="
-                w-full bg-bg border border-border rounded-xl
-                pl-16 pr-4 py-4 font-mono text-lg text-text
-                focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
-                placeholder:text-muted/50 transition-all
-                shadow-inner-sm
-              "
-            />
-          </div>
-          <Button 
-            onClick={() => compute(expr)} 
-            loading={loading} 
-            size="lg"
-            className="shadow-glow hover:shadow-accent/40"
-          >
-            Compute dy/dx
-          </Button>
-        </div>
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-[2]">
+              <label className="text-xs font-display text-dim uppercase tracking-widest mb-2 block">
+                Function f(x)
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent font-serif italic text-lg opacity-60">
+                  f(x) =
+                </span>
+                <input
+                  type="text"
+                  value={expr}
+                  onChange={e => { setExpr(e.target.value); setError(""); }}
+                  onKeyDown={e => e.key === "Enter" && compute(expr)}
+                  placeholder="e.g.  sin(x)/x, 1/x"
+                  className="
+                    w-full bg-bg border border-border rounded-xl
+                    pl-16 pr-4 py-4 font-mono text-lg text-text
+                    focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+                    placeholder:text-muted/50 transition-all shadow-inner-sm
+                  "
+                />
+              </div>
+            </div>
 
-        <p className="text-xs text-muted mt-3 italic">
-          Use <code className="text-accent/60">**</code> for power, <code className="text-accent/60">*</code> for mult. 
-          Supports <InlineMath math="a^x" />, <InlineMath math="\sin(x)" />, <InlineMath math="\ln(x)" />, etc.
-        </p>
+            <div className="flex-1">
+              <label className="text-xs font-display text-dim uppercase tracking-widest mb-2 block">
+                Approach Value (x → c)
+              </label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent opacity-60">
+                  <ArrowRight size={18} />
+                </span>
+                <input
+                  type="text"
+                  value={limitVal}
+                  onChange={e => { setLimitVal(e.target.value); setError(""); }}
+                  onKeyDown={e => e.key === "Enter" && compute(expr)}
+                  placeholder="e.g. 0, oo, 1"
+                  className="
+                    w-full bg-bg border border-border rounded-xl
+                    pl-12 pr-4 py-4 font-mono text-lg text-text
+                    focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20
+                    placeholder:text-muted/50 transition-all shadow-inner-sm
+                  "
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-2">
+            <div className="text-xs text-muted italic">
+              Use <code className="text-accent/60">oo</code> for infinity. Supports <InlineMath math="\lim_{x \to c} f(x)" />.
+            </div>
+            <Button 
+              onClick={() => compute(expr)} 
+              loading={loading} 
+              size="lg"
+              className="shadow-glow hover:shadow-accent/40 min-w-[140px]"
+            >
+              Evaluate Limit
+            </Button>
+          </div>
+        </div>
 
         {error && <div className="mt-4"><ErrorMessage message={error} /></div>}
       </Card>
@@ -131,13 +158,13 @@ export default function Calculus() {
       <div>
         <p className="text-xs font-display text-dim uppercase tracking-widest mb-3 flex items-center gap-2">
           <span className="w-4 h-px bg-border"></span>
-          Try a classic example
+          Try an example
           <span className="w-4 h-px bg-border"></span>
         </p>
         <div className="flex flex-wrap gap-3">
           {EXAMPLES.map(ex => (
             <button
-              key={ex.expr}
+              key={ex.expr + ex.value}
               onClick={() => pickExample(ex)}
               title={ex.hint}
               className="
@@ -164,7 +191,7 @@ export default function Calculus() {
             <p className="text-xs font-display text-accent uppercase tracking-[0.2em] mb-4">Final Result</p>
             <div className="flex flex-col gap-4">
               <div className="text-xl text-dim flex items-center gap-2 font-serif opacity-80">
-                <InlineMath math={`\\frac{d}{dx}[${result.input_latex}]`} />
+                <InlineMath math={`\\lim_{{x \\to ${result.target_value ?? 'c'}}} ${result.input_latex}`} />
                 <span>=</span>
               </div>
               <div className="text-4xl sm:text-5xl font-serif text-white tracking-tight break-words">
@@ -176,7 +203,7 @@ export default function Calculus() {
           {/* Derivation Steps */}
           <Card className="p-8">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-xs font-display text-dim uppercase tracking-[0.2em]">Step-by-step Derivation</h3>
+              <h3 className="text-xs font-display text-dim uppercase tracking-[0.2em]">Step-by-step Process</h3>
               <div className="h-px flex-1 bg-border/40 mx-4"></div>
             </div>
             <Steps steps={result.steps} />
@@ -191,10 +218,9 @@ export default function Calculus() {
             <div className="w-12 h-12 rounded-full bg-surface border border-border flex items-center justify-center text-accent">
               <Activity size={24} />
             </div>
-            <h3 className="text-xl font-display font-medium text-text">Mathematical Calculus Engine</h3>
+            <h3 className="text-xl font-display font-medium text-text">Limit Calculus Engine</h3>
             <p className="text-dim text-sm leading-relaxed">
-              Our symbolic engine uses formal differentiation rules to dissect complex functions. 
-              Enter a function above to see the step-by-step process of finding its derivative.
+              Evaluate limits at any point, including infinity. Supports indeterminate forms and complex algebraic simplifications.
             </p>
           </div>
         </Card>

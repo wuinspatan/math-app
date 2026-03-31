@@ -123,3 +123,78 @@ def compute_diff(expr_str: str) -> dict:
         "result_latex": sp.latex(result),
         "steps":        _build_steps(expr_str, expr, result),
     }
+
+def _build_limit_steps(expr_str: str, expr: sp.Expr, value: sp.Expr, result: sp.Expr) -> list[str]:
+    """Produce a formal mathematical explanation for the limit process."""
+    steps: list[str] = []
+
+    steps.append(
+        rf"\text{{Goal: Evaluate the limit: }} \lim_{{x \to {sp.latex(value)}}} {sp.latex(expr)}"
+    )
+
+    if value.is_finite:
+        try:
+            # Check if direct substitution works
+            sub_val = expr.subs(x, value)
+            if sub_val.is_finite:
+                steps.append(
+                    rf"\text{{Step 1: Direct substitution. Replacing }} x \text{{ with }} {sp.latex(value)}."
+                )
+                steps.append(
+                    rf"\lim_{{x \to {sp.latex(value)}}} {sp.latex(expr)} = {sp.latex(sub_val)}"
+                )
+            else:
+                steps.append(
+                    r"\text{Note: Direct substitution results in an indeterminate form or undefined value.}"
+                )
+        except Exception:
+            pass
+
+    steps.append(
+        r"\text{Analyzing the behavior of the function as } x \text{ approaches } " + sp.latex(value) + r"\text{...}"
+    )
+
+    # Final result
+    steps.append(
+        rf"\therefore \lim_{{x \to {sp.latex(value)}}} {sp.latex(expr)} = {sp.latex(result)}"
+    )
+    
+    return steps
+
+def compute_limit(expr_str: str, value_str: str) -> dict:
+    """
+    Parse expression and value, compute limit, and return result + steps.
+    """
+    local_ns = {
+        "x": x,
+        "sin": sp.sin, "cos": sp.cos, "tan": sp.tan,
+        "exp": sp.exp, "log": sp.log, "ln": sp.ln,
+        "sqrt": sp.sqrt, "pi": sp.pi, "E": sp.E,
+        "oo": sp.oo, "inf": sp.oo, "infinity": sp.oo,
+    }
+
+    try:
+        expr = sp.sympify(expr_str, locals=local_ns)
+    except Exception:
+        raise ValueError(f"Could not parse expression: '{expr_str}'.")
+
+    try:
+        # Handle 'oo', '-oo', 'inf' or numbers
+        target_value = sp.sympify(value_str, locals=local_ns)
+    except Exception:
+        raise ValueError(f"Could not parse approaching value: '{value_str}'.")
+
+    try:
+        result = sp.limit(expr, x, target_value)
+    except Exception as exc:
+        raise ValueError(f"SymPy could not compute the limit: {exc}")
+
+    return {
+        "input":        expr_str,
+        "input_latex":  sp.latex(expr),
+        "target_value": value_str,
+        "result":       str(result),
+        "result_latex": sp.latex(result),
+        "steps":        _build_limit_steps(expr_str, expr, target_value, result),
+    }
+
