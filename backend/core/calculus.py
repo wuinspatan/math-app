@@ -100,9 +100,10 @@ def compute_diff(expr_str: str) -> dict:
             "x": x,
             "sin": sp.sin, "cos": sp.cos, "tan": sp.tan,
             "exp": sp.exp, "log": sp.log, "ln": sp.ln,
-            "sqrt": sp.sqrt, "pi": sp.pi, "E": sp.E,
+            "sqrt": sp.sqrt, "pi": sp.pi, "E": sp.E, "∞": sp.oo,
         }
-        # Allow any single character as a symbol (for a**x etc)
+        # Replace literal symbols which are not valid Python identifiers
+        expr_str = expr_str.replace("∞", "oo")
         expr = sp.sympify(expr_str, locals=local_ns)
     except Exception:
         raise ValueError(
@@ -170,16 +171,18 @@ def compute_limit(expr_str: str, value_str: str) -> dict:
         "sin": sp.sin, "cos": sp.cos, "tan": sp.tan,
         "exp": sp.exp, "log": sp.log, "ln": sp.ln,
         "sqrt": sp.sqrt, "pi": sp.pi, "E": sp.E,
-        "oo": sp.oo, "inf": sp.oo, "infinity": sp.oo,
+        "oo": sp.oo, "inf": sp.oo, "infinity": sp.oo, "∞": sp.oo,
     }
 
     try:
+        expr_str = expr_str.replace("∞", "oo")
         expr = sp.sympify(expr_str, locals=local_ns)
     except Exception:
         raise ValueError(f"Could not parse expression: '{expr_str}'.")
 
     try:
         # Handle 'oo', '-oo', 'inf' or numbers
+        value_str = value_str.replace("∞", "oo")
         target_value = sp.sympify(value_str, locals=local_ns)
     except Exception:
         raise ValueError(f"Could not parse approaching value: '{value_str}'.")

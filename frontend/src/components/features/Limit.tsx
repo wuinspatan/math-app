@@ -112,9 +112,31 @@ export default function Limit() {
             </div>
 
             <div className="flex-1">
-              <label className="text-xs font-display text-dim uppercase tracking-widest mb-2 block">
-                Approach Value (x → c)
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-display text-dim uppercase tracking-widest block">
+                  Value (x → c)
+                </label>
+                <div className="flex gap-2 items-center">
+                  {[
+                    { label: "\\infty", value: "∞" },
+                    { label: "-\\infty", value: "-∞" },
+                    { label: "0", value: "0" }
+                  ].map(s => (
+                    <button
+                      key={s.value}
+                      type="button"
+                      onClick={() => { setLimitVal(s.value); setError(""); }}
+                      className="
+                        px-2 py-0.5 text-xs rounded border border-border/60 
+                        bg-surface/20 text-dim hover:border-accent/60 hover:text-accent 
+                        hover:bg-accent/5 transition-all duration-200
+                      "
+                    >
+                      <InlineMath math={s.label} />
+                    </button>
+                  ))}
+                </div>
+              </div>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-accent opacity-60">
                   <ArrowRight size={18} />
@@ -124,7 +146,7 @@ export default function Limit() {
                   value={limitVal}
                   onChange={e => { setLimitVal(e.target.value); setError(""); }}
                   onKeyDown={e => e.key === "Enter" && compute(expr)}
-                  placeholder="e.g. 0, oo, 1"
+                  placeholder="e.g. 0, ∞, 1"
                   className="
                     w-full bg-bg border border-border rounded-xl
                     pl-12 pr-4 py-4 font-mono text-lg text-text
@@ -138,7 +160,7 @@ export default function Limit() {
 
           <div className="flex items-center justify-between pt-2">
             <div className="text-xs text-muted italic">
-              Use <code className="text-accent/60">oo</code> for infinity. Supports <InlineMath math="\lim_{x \to c} f(x)" />.
+              Use <code className="text-accent/60">∞</code> or <code className="text-accent/60">oo</code> for infinity. Supports <InlineMath math="\lim_{x \to c} f(x)" />.
             </div>
             <Button 
               onClick={() => compute(expr)} 
